@@ -33,7 +33,7 @@ public class AlbumPlayDao {
              PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setInt(1, userId);
-            statement.setInt(2, limit);
+            statement.setInt(2, limit + 1);
 
             try (ResultSet results = statement.executeQuery()) {
                 while (results.next()) {

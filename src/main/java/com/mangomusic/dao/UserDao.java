@@ -2,6 +2,7 @@ package com.mangomusic.dao;
 
 import com.mangomusic.model.User;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -172,7 +173,7 @@ public class UserDao {
     }
 
     public User updateUser(int userId, User user) {
-        String query = "UPDATE users SET username = ?, email = ?, signup_date = ?, subscription_type = ?, country = ?";
+        String query = "UPDATE users SET username = ?, email = ?, signup_date = ?, subscription_type = ?, country = ? WHERE user_id = ?";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -182,6 +183,7 @@ public class UserDao {
             statement.setObject(3, user.getSignupDate());
             statement.setString(4, user.getSubscriptionType());
             statement.setString(5, user.getCountry());
+            statement.setInt(6, userId);
 
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected == 0) {

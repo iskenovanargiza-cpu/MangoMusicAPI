@@ -7,7 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
+
+@RestController
 @RequestMapping("/api/albums")
 public class AlbumController {
 
@@ -15,6 +18,15 @@ public class AlbumController {
 
     public AlbumController(AlbumService albumService) {
         this.albumService = albumService;
+    }
+
+    @GetMapping("/{id}/play-count")
+    public ResponseEntity<Album> getPlayCount(@PathVariable int id){
+        Album album = albumService.getAlbumById(id);
+        if (album == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(album);
     }
 
     @GetMapping

@@ -4,9 +4,12 @@ import com.mangomusic.dao.AlbumDao;
 import com.mangomusic.dao.ArtistDao;
 import com.mangomusic.model.Album;
 import com.mangomusic.model.Artist;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AlbumService {
@@ -18,6 +21,7 @@ public class AlbumService {
         this.albumDao = albumDao;
         this.artistDao = artistDao;
     }
+
 
     public List<Album> getAllAlbums() {
         return albumDao.getAllAlbums();

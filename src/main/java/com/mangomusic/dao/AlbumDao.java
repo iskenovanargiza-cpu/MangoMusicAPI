@@ -1,12 +1,16 @@
 package com.mangomusic.dao;
 
 import com.mangomusic.model.Album;
+import com.mangomusic.model.Artist;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class AlbumDao {
@@ -38,6 +42,30 @@ public class AlbumDao {
         }
 
         return albums;
+    }
+    public Album getPlayCount(int albumId){
+        String query = "Select COUNT(ap.play_id), al.album_id, al.artist_id, al.title, al.release_year, " +
+                "a.name as artist_name FROM albums al " +
+                "JOIN artists a ON al.artist_id = a.artist_id " +
+        "JOIN album_plays ap ON al.album_id = ap.album_id " +
+        "WHERE al.album_id = 20";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, albumId);
+
+            try (ResultSet results = statement.executeQuery()) {
+                if (results.next()) {
+                    return mapRowToAlbum(results);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error getting album by ID", e);
+        }
+
+        return null;
     }
 
     public Album getAlbumById(int albumId) {
