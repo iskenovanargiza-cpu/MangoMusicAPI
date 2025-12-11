@@ -1,79 +1,74 @@
 ---
-name: "Feature #3: Recent Album Releases"
-about: Implement endpoint to get albums released in the last 2 years
+name: "Feature #4: User's Favorite Genre"
+about: Implement endpoint to get a user's most-played genre
 labels: feature, medium
-title: "Feature #3: Recent Album Releases"
+title: "Feature #4: User's Favorite Genre"
 ---
 
-## Feature #3: Recent Album Releases
+## Feature #4: User's Favorite Genre
 
 **Priority:** Medium  
-**Component:** Albums API  
-**Requested By:** Discovery Team
+**Component:** Users API  
+**Requested By:** Personalization Team
 
 ### Business Need
-The discovery team wants to showcase new music to users. They need an endpoint that returns recently released albums to feature in a "New Releases" section of the app.
+The personalization team wants to understand each user's music preferences to provide better recommendations. Knowing a user's favorite genre (based on listening history) is the first step in building a recommendation engine.
 
 ### Feature Description
-Create an endpoint that returns albums released in the last 2 years, ordered by release date (newest first). Support a limit parameter to control how many results are returned.
+Create an endpoint that returns the genre a user has listened to most based on their play history. This helps identify user preferences and can drive personalized content.
 
 ### Required Endpoint
-- `GET /api/albums/recent?limit=10`
+- `GET /api/users/{userId}/favorite-genre`
 
 ### Expected Response Format
 ```json
-[
-  {
-    "albumId": 523,
-    "artistId": 87,
-    "title": "Modern Album",
-    "releaseYear": 2024,
-    "artistName": "Contemporary Artist"
-  },
-  {
-    "albumId": 498,
-    "artistId": 72,
-    "title": "Last Year's Hit",
-    "releaseYear": 2023,
-    "artistName": "Another Artist"
-  }
-]
+{
+  "userId": 1,
+  "username": "john_doe",
+  "favoriteGenre": "rock",
+  "playsInGenre": 847
+}
 ```
 
 ### Technical Requirements
 
-**1. Controller Method:** Add to `AlbumController.java`:
+**1. Controller Method:** Add to `UserController.java`:
 ```java
-@GetMapping("/recent")
-public ResponseEntity<List<Album>> getRecentAlbums(
-    @RequestParam(defaultValue = "10") int limit)
+@GetMapping("/{id}/favorite-genre")
+public ResponseEntity<?> getFavoriteGenre(@PathVariable int id)
 ```
 
-**2. Service Method:** Add to `AlbumService.java`:
-- Method: `getRecentAlbums(int limit)`
-- Should cap limit at 100 (don't allow unlimited results)
-- Calculate "recent" as last 2 years from current year
+**2. Service Method:** Add to `UserService.java`:
+- Method: `getFavoriteGenre(int userId)`
+- Should validate that user exists
+- Return a Map with userId, username, favoriteGenre, and playsInGenre
 
-**3. DAO Method:** Add to `AlbumDao.java`:
-- Query to filter by release_year >= (YEAR(CURDATE()) - 2)
-- ORDER BY release_year DESC, title ASC
-- Apply LIMIT
+**3. DAO Method:** Add to `UserDao.java`:
+- Complex query joining: album_plays → albums → artists
+- GROUP BY genre
+- ORDER BY play count DESC
+- LIMIT 1
+- Also need to fetch the user's username
 
 ### Business Rules
-- "Recent" means released in the last 2 years (including current year)
-- Default limit is 10
-- Maximum limit is 100 (if user requests more, cap at 100)
-- Order by release year descending (newest first), then by title alphabetically
-- Include artist name in results
+- Return 404 if user doesn't exist
+- Return 404 if user has no play history
+- Count both completed and incomplete plays
+- If there's a tie, return the genre that comes first alphabetically
 
 ### Verification Steps
-1. Test without limit parameter - should return 10 results
-2. Test with limit=5 - should return 5 results
-3. Test with limit=200 - should cap at 100 results
-4. Verify all returned albums are from last 2 years
+1. Test with user ID 1 - should return their most-played genre
+2. Test with a user that has no plays - should return 404
+3. Test with user ID 999 (doesn't exist) - should return 404
+4. Verify the play count matches a manual query
 
 ### Success Criteria
-- Endpoint respects limit parameter
-- Results are properly filtered and sorted
-- Artist names are included
-- Limit is capped at 100
+- Endpoint returns correct favorite genre
+- Play count is accurate
+- Username is included in response
+- Proper error handling
+
+### Hints
+- Your query needs to join three tables: `album_plays -> albums -> artists`
+- Use `GROUP BY artists.primary_genre`
+- You might want to use a subquery or create a helper method to get the username separately

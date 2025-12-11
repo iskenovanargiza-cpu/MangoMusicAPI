@@ -46,7 +46,7 @@ Create an endpoint that returns albums released in the last 2 years, ordered by 
 ```java
 @GetMapping("/recent")
 public ResponseEntity<List<Album>> getRecentAlbums(
-    @RequestParam(defaultValue = "10") int limit)
+@RequestParam(defaultValue = "10") int limit)
 ```
 
 **2. Service Method:** Add to `AlbumService.java`:
