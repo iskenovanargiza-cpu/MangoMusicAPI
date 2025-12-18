@@ -20,6 +20,12 @@ public class AlbumController {
         this.albumService = albumService;
     }
 
+    @GetMapping("/recent")
+    public ResponseEntity<List<Album>> getRecentAlbums(
+            @RequestParam(defaultValue = "10") int limit){
+        return ResponseEntity.ok(albumService.getRecentAlbums(limit));
+}
+
     @GetMapping("/{id}/play-count")
     public ResponseEntity<Album> getPlayCount(@PathVariable int id){
         Album album = albumService.getAlbumById(id);

@@ -16,6 +16,14 @@ public class UserService {
         this.userDao = userDao;
     }
 
+    public List<User> getFavoriteGenre(int userId){
+        return userDao.getFavoriteGenre(userId);
+
+
+
+
+    }
+
     public List<User> getAllUsers() {
         return userDao.getAllUsers();
     }

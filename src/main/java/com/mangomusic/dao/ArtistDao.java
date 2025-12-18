@@ -17,6 +17,32 @@ public class ArtistDao {
         this.dataSource = dataSource;
     }
 
+    public Artist getTopAlbum(int id) {
+        String query = "SELECT COUNT(ap.play_id) as \"play_count\", ar.* " +
+                "FROM albums as a " +
+                "JOIN album_plays as ap ON (ap.album_id = a.album_id) " +
+                "JOIN artists as ar on (a.artist_id = ar.artist_id) " +
+                "GROUP BY ap.album_id " +
+                "ORDER BY play_count " +
+                "DESC";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            try (ResultSet results = statement.executeQuery()) {
+                if (results.next()) {
+                    return mapRowToArtist(results);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error getting album by ID", e);
+        }
+
+        return null;
+    }
+
+
     public List<Artist> getAllArtists() {
         List<Artist> artists = new ArrayList<>();
         String query = "SELECT artist_id, name, primary_genre, formed_year FROM artists ORDER BY name";

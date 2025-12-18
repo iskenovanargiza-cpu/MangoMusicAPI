@@ -1,6 +1,7 @@
 package com.mangomusic.service;
 
 import com.mangomusic.dao.ArtistDao;
+import com.mangomusic.model.Album;
 import com.mangomusic.model.Artist;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,14 @@ public class ArtistService {
     public ArtistService(ArtistDao artistDao) {
         this.artistDao = artistDao;
     }
+
+    public Artist getTopAlbum(int artistId){
+        return artistDao.getTopAlbum(artistId);
+
+
+    }
+
+
 
     public List<Artist> getAllArtists() {
         return artistDao.getAllArtists();

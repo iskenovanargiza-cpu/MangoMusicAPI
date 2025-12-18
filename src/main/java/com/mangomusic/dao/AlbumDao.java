@@ -21,6 +21,37 @@ public class AlbumDao {
         this.dataSource = dataSource;
     }
 
+    public List<Album> getRecentAlbums(int limit){
+        List<Album> recentAlbums = new ArrayList<>();
+        String query =  "SELECT a.* ,ar.name as artist_name " +
+                "FROM albums a " +
+                "JOIN artists ar ON a.artist_id = ar.artist_id " +
+                "GROUP BY a.album_id " +
+                "ORDER BY release_year DESC " +
+                "LIMIT ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, limit);
+
+            try (ResultSet results = statement.executeQuery()) {
+                while (results.next()) {
+                    Album album = mapRowToAlbum(results);
+                    recentAlbums.add(album);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error getting albums by artist", e);
+        }
+
+        return recentAlbums;
+    }
+
+
+
+
     public List<Album> getAllAlbums() {
         List<Album> albums = new ArrayList<>();
         String query = "SELECT al.album_id, al.artist_id, al.title, al.release_year, ar.name as artist_name " +
@@ -43,6 +74,7 @@ public class AlbumDao {
 
         return albums;
     }
+
     public Album getPlayCount(int albumId){
         String query = "Select COUNT(ap.play_id), al.album_id, al.artist_id, al.title, al.release_year, " +
                 "a.name as artist_name FROM albums al " +

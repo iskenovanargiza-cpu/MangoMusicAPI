@@ -18,6 +18,11 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/{id}/favorite-genre")
+    public ResponseEntity<?> getFavoriteGenre(@PathVariable int id){
+
+    }
+
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers(
             @RequestParam(required = false) String search,

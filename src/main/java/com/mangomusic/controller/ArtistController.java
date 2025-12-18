@@ -1,5 +1,6 @@
 package com.mangomusic.controller;
 
+import com.mangomusic.model.Album;
 import com.mangomusic.model.Artist;
 import com.mangomusic.service.ArtistService;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,16 @@ public class ArtistController {
     public ArtistController(ArtistService artistService) {
         this.artistService = artistService;
     }
+
+    @GetMapping("/{id}/top-album")
+    public ResponseEntity<?> getTopAlbum(@PathVariable int id){
+        Artist artist = artistService.getTopAlbum(id);
+        if (artist == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(artist);
+    }
+
 
     @GetMapping
     public ResponseEntity<List<Artist>> getAllArtists(@RequestParam(required = false) String search) {

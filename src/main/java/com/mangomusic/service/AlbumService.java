@@ -7,6 +7,8 @@ import com.mangomusic.model.Artist;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Year;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,20 @@ public class AlbumService {
     public AlbumService(AlbumDao albumDao, ArtistDao artistDao) {
         this.albumDao = albumDao;
         this.artistDao = artistDao;
+    }
+
+    public List<Album> getRecentAlbums(int limit){
+//        int currentYear = Year.now().getValue();
+//        int recentYearCalc = currentYear - 2;
+//
+//        if (limit > 100) {
+//            limit = 100;
+//        }
+//        if(limit < 100) {
+//            limit = limit;
+
+
+        return albumDao.getRecentAlbums(limit);
     }
 
 

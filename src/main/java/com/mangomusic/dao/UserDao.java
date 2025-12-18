@@ -18,6 +18,11 @@ public class UserDao {
         this.dataSource = dataSource;
     }
 
+//    public List<User> getFavoriteGenre(int userId) {
+//        List<User> users = new ArrayList<>();
+//        String query =
+//    }
+
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String query = "SELECT user_id, username, email, signup_date, subscription_type, country " +
@@ -227,4 +232,6 @@ public class UserDao {
         user.setCountry(results.getString("country"));
         return user;
     }
+
+
 }
